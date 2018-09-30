@@ -1,1 +1,0 @@
-# andrej-szontagh.github.io
