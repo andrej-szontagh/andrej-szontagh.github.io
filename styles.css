@@ -417,6 +417,10 @@ body.noscroll {
         width: 6.4em;
         left: calc(50% - 1.5em); } }
 
+@media (orientation: portrait) and (max-width: 1599px) and (max-width: 799px) {
+  #contact #email {
+    top: 10.57rem; } }
+
 @media (orientation: portrait) and (max-width: 1599px) and (min-width: 200px) and (min-height: 800px) {
   #contact #email {
     font-size: var(--font-size-3);
