@@ -358,7 +358,8 @@ body.noscroll {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: center; }
+  align-items: center;
+  overflow: hidden; }
   #contact a {
     font-weight: var(--font-weight-black);
     font-size: var(--font-size-3);
