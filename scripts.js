@@ -585,7 +585,18 @@ GalleryImages.prototype = {
         this.lightbox.classList.remove  ("lightbox-hidden");
         this.lightbox.classList.add     ("lightbox-visible");
 
-        this.lightbox_img.src = img.getAttribute ("src-lightbox");
+        // Set low-res image first (which suppose to be already loaded)
+        // and after showing up start loading actuall hi-res image
+
+        this.lightbox_img.setAttribute ("src",      img.getAttribute ("src"));
+        this.lightbox_img.setAttribute ("src-lazy", img.getAttribute ("src-lightbox"));
+
+        this.lightbox_img.onload = function (e) {
+
+            var img = e.target;
+
+            img.src = img.getAttribute ("src-lazy");
+        }
 
         this.lightbox_visible = true;
     },
