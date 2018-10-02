@@ -113,6 +113,23 @@ body.noscroll {
   font-weight: var(--font-weight-normal);
   line-height: 1.6em;
   pointer-events: none; }
+  #ui.overlay .button-hover:not(.hidden),
+  #ui.overlay .button-press:not(.hidden) {
+    pointer-events: none;
+    opacity: 0.3; }
+    #ui.overlay .button-hover:not(.hidden)[button-state='on'],
+    #ui.overlay .button-press:not(.hidden)[button-state='on'] {
+      opacity: 1.0;
+      pointer-events: auto; }
+  #ui.overlay #contact a:not(.hidden) {
+    opacity: 0.0;
+    pointer-events: auto; }
+    #ui.overlay #contact a:not(.hidden)[button-state='on'] {
+      opacity: 0.0;
+      pointer-events: auto; }
+  #ui.overlay #terms-conditions-block:not(.hidden) {
+    opacity: 1.0;
+    pointer-events: auto; }
   #ui .button-hover,
   #ui .button-press {
     pointer-events: auto;
@@ -145,7 +162,7 @@ body.noscroll {
     user-select: none; }
     #ui #overlay.visible {
       transition: opacity 0.5s;
-      opacity: 0.5; }
+      opacity: 0.7; }
     #ui #overlay.hidden {
       transition: opacity 0.5s;
       opacity: 0.0; }
@@ -940,7 +957,7 @@ body.noscroll {
       left: 0;
       top: 0;
       background-image: radial-gradient(var(--color-bg) 50%, black 100%);
-      opacity: 0.5;
+      opacity: 0.8;
       z-index: -1; }
     #gallery-images #lightbox.lightbox-hidden {
       opacity: 0.0;
