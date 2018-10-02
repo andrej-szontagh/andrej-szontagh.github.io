@@ -130,6 +130,9 @@ body.noscroll {
   #ui.overlay #terms-conditions-block:not(.hidden) {
     opacity: 1.0;
     pointer-events: auto; }
+  #ui.overlay #terms-conditions-button-press[button-state='on'] {
+    opacity: 0.0;
+    pointer-events: none; }
   #ui .button-hover,
   #ui .button-press {
     pointer-events: auto;
