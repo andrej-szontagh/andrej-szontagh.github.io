@@ -16,11 +16,10 @@
         <a href="https://dribbble.com/AndrejSzontagh"           target="_blank" class="button-hover" button-target="#overlay"><div>Dribbble</div></a>
         <a href="https://github.com/andrej-szontagh"            target="_blank" class="button-hover" button-target="#overlay"><div>GitHub</div></a>
     </div>
-    <div id="terms-conditions-button-hover" class="button-hover" button-state="off" button-target="#overlay, #terms-conditions-block">Terms & Conditions</div>
-    <div id="terms-conditions-button-press" class="button-press" button-state="off" button-target="#overlay, #terms-conditions-block">Terms & Conditions</div>
-    <div id="terms-conditions-block"        class="button-press hidden"
-        button-state="{#terms-conditions-button-press}"
-        button-target="#overlay, #terms-conditions-block">
+    <div id="terms-conditions-button"   class="button-hover" button-state="off" button-target="#overlay, #terms-conditions-block">
+        Terms & Conditions
+    </div>
+    <div id="terms-conditions-block"    class="button-press hidden" button-state="[on]" button-set-off="#terms-conditions-button">
         <div class="scroll">
             <div id="block-a">
                 <h3>It's €800 / $1000 per milestone.</h3>
@@ -54,12 +53,13 @@
             <p>© 2018 Andrej Szontagh.<br>All Rights Reserved.</p>
         </div>
     </div>
-    <div id="contact">
-        <a href="" id="contact-button" class="button-hover" button-state="off" button-target="#overlay">
-            <span class="contact-slash">\ </span>Contact<span class="contact-tail"> me</span></a>
-        <div id="email"></div>
+    <a href="" id="contact-button" class="button-hover" button-state="off" button-target="#overlay, #contact-block">
+        <span class="contact-button-slash">\ </span>Contact<span class="contact-button-tail"> me</span>
+    </a>
+    <div id="contact-block">
+        <div id="contact-email"></div>
     </div>
-    <div id="overlay"></div>
+    <div id="overlay" class="button-press hidden" button-state="[on]" button-set-off="#ui .button-press" button-target="#overlay"></div>
 </div>
 <div id="content">
     <div id="gallery-videos"></div>

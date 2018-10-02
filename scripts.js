@@ -620,20 +620,42 @@ function UI () {
     t.ui        = document.getElementById ("ui");
     t.overlay   = document.getElementById ("overlay");
 
-    t.ui_links      = t.ui.querySelector ("#external-links");
-    t.ui_contact_a  = t.ui.querySelector ("#contact a");
+    // detect touch device !
+
+    // https://codeburst.io/the-only-way-to-detect-touch-with-javascript-7791a3346685
+
+    // this seems to be the only realiable method since you still can have devices supporting and
+    // actively using both touch and other pointer devices so the only way to know for sure that the user is
+    // going to touch is to use listen for actual touch events.
+
+    // problem with this method is that we don't know until user touches ..
+
+    window.addEventListener ('touchstart', function onFirstTouch () {
+
+        console.log ("User touched !");
+
+        t.touch = true;
+
+        t.updateButtons ();
+
+        // we only need to know once that a human touched the screen, so we can stop listening now
+        window.removeEventListener ('touchstart', onFirstTouch, false);
+
+    }, false);
+
+    t.updateButtons ();
 
     // build the email
     {
-        var email_link      = t.ui.querySelector ("#contact a");
-        var email_banner    = t.ui.querySelector ("#contact #email");
+        var email_button    = t.ui.querySelector ("#contact-button");
+        var email_banner    = t.ui.querySelector ("#contact-email");
 
         var email_name_1    = "andrej";
         var email_name_2    = "szontagh";
         var email_serv_1    = "gmail";
         var email_serv_2    = "com";
 
-        email_link.href = "mailto:" +
+        email_button.href = "mailto:" +
             email_name_1 + "." + email_name_2 + "@" +
             email_serv_1 + "." + email_serv_2;
 
@@ -643,114 +665,212 @@ function UI () {
             email_serv_1 + "\u200B.\u200B" + email_serv_2;
     }
 
-    // button mechanics ..
+    // special case .. for disabling main content scrolling
     {
-        function parseButtonStateRef (el) {
+        var el      = document.getElementById ("terms-conditions-block");
+        var body    = document.getElementsByTagName ("BODY")[0];
 
-            var attr = el.getAttribute ("button-state");
+        el.addEventListener ('onvisible',   function (e) { body.classList.add       ("noscroll"); }, false);
+        el.addEventListener ('onhidden',    function (e) { body.classList.remove    ("noscroll"); }, false);
+    }
 
-            if (attr) {
-                attr = attr.trim ();
+    // special case .. ui disable when overlay is shown
+    {
+        var el      = document.getElementById ("overlay");
+
+        el.addEventListener ('onvisible',   function (e) { t.ui.classList.add       ("overlay"); }, false);
+        el.addEventListener ('onhidden',    function (e) { t.ui.classList.remove    ("overlay"); }, false);
+    }
+}
+
+UI.prototype = {
+
+    constructor:    UI,
+
+    touch:          false,  // touch device ?
+
+    overlay:        null,
+    ui:             null,
+
+    parseButtonStateRef: function (el) {
+
+        var out = {
+
+            value:              null,
+            value_ext:          null,
+            value_readonly:     false,
+        };
+
+        var attr = el.getAttribute ("button-state");
+
+        if (attr) {
+            attr = attr.trim ();
+
+            if (attr && attr.length > 0 &&
+                (attr.charAt (0)                === '[') &&
+                (attr.charAt (attr.length - 1)  === ']')
+            ){
+                attr = attr.substring (1, attr.length - 1);
+
+                out.value_readonly = true;
             }
 
-            if (
-                attr &&
-                attr !== ""     &&
-                attr !== "on"   &&
-                attr !== "off"  &&
+            if (attr === "on")                  out.value = "on";
+            if (attr === "off" || attr === "")  out.value = "off";
+
+            if (attr && attr.length > 0 &&
                 (attr.charAt (0)                === '{') &&
                 (attr.charAt (attr.length - 1)  === '}')
             ){
-
                 attr = attr.substring (1, attr.length - 1);
 
-                return attr;
+                out.value_ext = attr;
             }
-
-            return null;
         }
 
-        function setButtonState (el, state) {
+        return out;
+    },
 
-            var attr = parseButtonStateRef (el);
+    setButtonState: function (el, state) {
 
-            if (attr !== null) {
+        var t = this;
 
-                var targets = t.ui.querySelectorAll (attr);
+        // safety check
+        if (el.classList.contains ("button-hover") ||
+            el.classList.contains ("button-press")) {
 
-                if (targets) {
+            var button_state = t.parseButtonStateRef (el);
+
+            if (!button_state.value_readonly) {
+                /*
+                if (button_state.value_ext) {
+
+                    var targets = t.ui.querySelectorAll (button_state.value_ext);
 
                     for (var i = 0; i < targets.length; i ++) {
 
-                        var target = targets [i];
-
-                        target.setAttribute ("button-state", state);
-
-                        // console.log ("Button : " + target.id + " Ref. State > " + attr);
+                        t.setButtonState (targets [i], state);
                     }
                 }
-
-            } else {
-
+                */
                 // console.log ("Button : " + el.id + " State > " + state);
 
                 el.setAttribute ("button-state", state);
             }
-        }
 
-        function getButtonState (el) {
+            if (state === "on") {
 
-            var attr = parseButtonStateRef (el);
+                var button_set = el.getAttribute ("button-set-on");
 
-            // console.log ("getButtonState > parseButtonStateRef > " + attr);
+                if (button_set !== null) {
 
-            if (attr !== null) {
-
-                var target = t.ui.querySelector (attr);
-
-                if (target) {
-
-                    return target.getAttribute ("button-state");
-                }
-
-            } else {
-
-                return el.getAttribute ("button-state");
-            }
-        }
-
-        function showButtonTargets (el, attr, on) {
-
-            var sel = el.getAttribute (attr);
-
-            if (sel) {
-
-                var targets = t.ui.querySelectorAll (sel);
-
-                if (targets != null) {
+                    var targets = t.ui.querySelectorAll (button_set);
 
                     for (var i = 0; i < targets.length; i ++) {
 
-                        var target = targets [i];
+                        if (targets [i] !== el) {
 
-                        if (on) {
-
-                            target.classList.remove ("hidden");
-                            target.classList.add    ("visible");
-
-                            target.dispatchEvent (new Event ('onvisible'));
-
-                        } else {
-
-                            target.classList.remove ("visible");
-                            target.classList.add    ("hidden");
-
-                            target.dispatchEvent (new Event ('onhidden'));
+                            t.setButtonState (targets [i], state);
                         }
+                    }
+                }
+
+                t.showButtonTargets (el, "button-target", true);
+            }
+
+            if (state === "off") {
+
+                var button_set = el.getAttribute ("button-set-off");
+
+                if (button_set !== null) {
+
+                    var targets = t.ui.querySelectorAll (button_set);
+
+                    for (var i = 0; i < targets.length; i ++) {
+
+                        if (targets [i] !== el) {
+
+                            t.setButtonState (targets [i], state);
+                        }
+                    }
+                }
+
+                t.showButtonTargets (el, "button-target", false);
+            }
+        }
+    },
+
+    getButtonState: function (el) {
+
+        var t = this;
+
+        var button_state = this.parseButtonStateRef (el);
+
+        // console.log ("getButtonState > parseButtonStateRef > " + attr);
+
+        if (button_state.value === "on" ||
+            button_state.value === "off") {
+
+            return button_state.value;
+
+        } else
+        if (button_state.value_ext !== null) {
+
+            var target = t.ui.querySelector (attr);
+
+            if (target) {
+
+                var button_state_ext = this.parseButtonStateRef (target);
+
+                if (button_state_ext.value === "on" ||
+                    button_state_ext.value === "off") {
+
+                    return button_state_ext.value;
+                }
+            }
+        }
+
+        return "off";
+    },
+
+    showButtonTargets: function (el, attr, on) {
+
+        var t = this;
+
+        var sel = el.getAttribute (attr);
+
+        if (sel) {
+
+            var targets = t.ui.querySelectorAll (sel);
+
+            if (targets != null) {
+
+                for (var i = 0; i < targets.length; i ++) {
+
+                    var target = targets [i];
+
+                    if (on) {
+
+                        target.classList.remove ("hidden");
+                        target.classList.add    ("visible");
+
+                        target.dispatchEvent (new Event ('onvisible'));
+
+                    } else {
+
+                        target.classList.remove ("visible");
+                        target.classList.add    ("hidden");
+
+                        target.dispatchEvent (new Event ('onhidden'));
                     }
                 }
             }
         }
+    },
+
+    updateButtons: function () {
+
+        var t = this;
 
         // HOVER BUTTONS >>
         {
@@ -760,17 +880,22 @@ function UI () {
 
                 var b = buttons [i];
 
-                b.addEventListener ("mouseenter", function (e) {
+                b.removeEventListener ("mouseenter", b.on_mouseenter_button_target_listener);
+                b.removeEventListener ("mouseleave", b.on_mouseleave_button_target_listener);
 
-                    setButtonState      (e.target, "on");
-                    showButtonTargets   (e.target, "button-target", true);
-                });
+                if (t.touch) {
 
-                b.addEventListener ("mouseleave", function (e) {
+                    b.classList.remove  ("button-hover");
+                    b.classList.add     ("button-press");
 
-                    setButtonState      (e.target, "off");
-                    showButtonTargets   (e.target, "button-target", false);
-                });
+                } else {
+
+                    b.on_mouseenter_button_target_listener = function (e) { t.setButtonState (e.target, "on");  }
+                    b.on_mouseleave_button_target_listener = function (e) { t.setButtonState (e.target, "off"); }
+
+                    b.addEventListener ("mouseenter", b.on_mouseenter_button_target_listener);
+                    b.addEventListener ("mouseleave", b.on_mouseleave_button_target_listener);
+                }
             }
         }
 
@@ -782,53 +907,22 @@ function UI () {
 
                 var b = buttons [i];
 
-                //b.addEventListener ("click", function (e) {
-                b.addEventListener ("mousedown", function (e) {
+                b.removeEventListener ("mousedown", b.on_mousedown_button_target_listener);
+
+                b.on_mousedown_button_target_listener = function (e) {
 
                     var el = e.target;
 
-                    var state = getButtonState (el);
+                    var state = t.getButtonState (el);
 
-                    if (state === "on") {
+                    if (state === "on")     { t.setButtonState (el, "off"); } else
+                    if (state === "off")    { t.setButtonState (el, "on");  }
+                }
 
-                        setButtonState      (el, "off");
-                        showButtonTargets   (el, "button-target", false);
-
-                    } else
-                    if (state === "off" || state === "") {
-
-                        setButtonState      (el, "on");
-                        showButtonTargets   (el, "button-target", true);
-                    }
-                });
+                b.addEventListener ("mousedown", b.on_mousedown_button_target_listener);
             }
         }
-
-        // special case .. for disabling main content scrolling
-        {
-            var el      = document.getElementById ("terms-conditions-block");
-            var body    = document.getElementsByTagName ("BODY")[0];
-
-            el.addEventListener ('onvisible',   function (e) { body.classList.add       ("noscroll"); }, false);
-            el.addEventListener ('onhidden',    function (e) { body.classList.remove    ("noscroll"); }, false);
-        }
-
-        // special case .. ui disable when overlay is shown
-        {
-            var el      = document.getElementById ("overlay");
-
-            el.addEventListener ('onvisible',   function (e) { t.ui.classList.add       ("overlay"); }, false);
-            el.addEventListener ('onhidden',    function (e) { t.ui.classList.remove    ("overlay"); }, false);
-        }
-    }
-}
-
-UI.prototype = {
-
-    constructor:    UI,
-
-    overlay:        null,
-    ui:             null,
+    },
 }
 
 
