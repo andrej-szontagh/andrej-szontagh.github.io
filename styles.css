@@ -393,8 +393,6 @@ body.noscroll {
     cursor: pointer;
     pointer-events: auto;
     user-select: none; }
-    #contact a:hover {
-      opacity: 0.3; }
 
 @media (max-width: 1599px) and (max-width: 799px) {
   #contact a {
