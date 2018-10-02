@@ -804,14 +804,21 @@ function UI () {
             }
         }
 
+        // special case .. for disabling main content scrolling
         {
-            // special case .. for disabling main content scrolling
-
             var el      = document.getElementById ("terms-conditions-block");
             var body    = document.getElementsByTagName ("BODY")[0];
 
             el.addEventListener ('onvisible',   function (e) { body.classList.add       ("noscroll"); }, false);
             el.addEventListener ('onhidden',    function (e) { body.classList.remove    ("noscroll"); }, false);
+        }
+
+        // special case .. ui disable when overlay is shown
+        {
+            var el      = document.getElementById ("overlay");
+
+            el.addEventListener ('onvisible',   function (e) { t.ui.classList.add       ("overlay"); }, false);
+            el.addEventListener ('onhidden',    function (e) { t.ui.classList.remove    ("overlay"); }, false);
         }
     }
 }
