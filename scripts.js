@@ -1,4 +1,25 @@
 
+String.prototype.hashCode = function () {
+
+    // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+
+    var hash = 0, i, chr;
+
+    if (this.length === 0) return hash;
+
+    for (i = 0; i < this.length; i++) {
+
+        chr   = this.charCodeAt (i);
+        hash  = ((hash << 5) - hash) + chr;
+
+        // Convert to 32bit integer
+        hash |= 0;
+    }
+
+    return hash;
+};
+
+
 function Animations () {
     
     // empty ..
@@ -311,18 +332,136 @@ function onYouTubeIframeAPIReady () {
 
 
 
+function Gallery (manager_ui, manager_animations) {
+
+    var t = this;
+
+    t.manager_videos = new GalleryVideos (
+
+        document.getElementById ("gallery-videos"), "data/gallery-videos.json", manager_animations, 0.0,
+
+        function () {
+
+            console.log ("Video Gallery Initialized");
+        }
+    );
+
+    t.manager_images = new GalleryImages (
+
+        document.getElementById ("gallery-images"), "data/gallery-images.json",
+
+        function () {
+
+            console.log ("Image Gallery Initialized");
+        },
+
+        function () {
+
+            console.log ("Image Gallery Update");
+
+            updateButtons ();
+        }
+    );
+
+    updateButtons ();
+
+    function updateButtons () {
+
+        var gallery_blocks = document.querySelectorAll (".gallery-block");
+
+        if (gallery_blocks) {
+
+            for (var i = 0; i < gallery_blocks.length; i ++) {
+
+                var el = gallery_blocks [i];
+
+                if (el.classList.contains   ("button-hover") == false) {
+                    el.classList.add        ("button-hover");
+
+                    el.setAttribute ("button-target",  "<this>");
+                    el.setAttribute ("button-clear",   ".gallery-block");
+
+                    el.___callback_open_lightbox = function (e) {
+
+                        if (e.target.parentNode.id === "gallery-images") {
+
+                            // console.log ("LIGHTBOX >> OPEN >> IMAGE LIGHTBOX");
+
+                            t.manager_images.showLightbox (e.target.querySelector ("img"));
+
+                        } else
+                        if (e.target.parentNode.id === "gallery-videos") {
+
+                            // console.log ("LIGHTBOX >> OPEN >> VIDEO LIGHTBOX");
+                        }
+                    }
+                }
+            }
+        }
+
+        manager_ui.updateButtons ();
+    }
+};
+
+Gallery.prototype = {
+
+    constructor:        Gallery,
+
+    manager_videos:     null,
+    manager_images:     null,
+
+    showLightbox: function (img) {
+
+        console.log ("showLightbox");
+
+        /*
+        this.lightbox.classList.remove  ("lightbox-hidden");
+        this.lightbox.classList.add     ("lightbox-visible");
+
+        // Set low-res image first (which suppose to be already loaded)
+        // and after showing up start loading actuall hi-res image
+
+        this.lightbox_img.setAttribute ("src",      img.getAttribute ("src"));
+        this.lightbox_img.setAttribute ("src-lazy", img.getAttribute ("src-lightbox"));
+
+        this.lightbox_img.onload = function (e) {
+
+            var img = e.target;
+
+            img.src = img.getAttribute ("src-lazy");
+        }
+
+        this.lightbox_visible = true;
+        */
+    },
+
+    hideLightbox: function () {
+
+        console.log ("hideLightbox");
+
+        /*
+        this.lightbox.classList.remove  ("lightbox-visible");
+        this.lightbox.classList.add     ("lightbox-hidden");
+
+        this.lightbox_visible = false;
+        */
+    },
+
+}
+
+
 function GalleryVideos (container, filepath_json, animations, edge, callback) {
 
     var t = this;
-    
+
     t.container = container;
-    
+
     YouTubeAPIInit ();
-            
+
     loadJSON (filepath_json, function (json) {
 
         var index = -1;
-    
+
         for (var vid in json.videos) {
 
             index ++;
@@ -331,38 +470,38 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
             if (json.videos.hasOwnProperty (vid)) {
 
                 var video = json.videos [vid]
-            
+
                 // console.log (key, json.videos [vid]);
-                
+
                 var wrapper = document.createElement ('div');
                 var cover   = document.createElement ('img');
                 var player  = document.createElement ('div');
-                
+
                 cover   .id         = "youtube-cover-"  + index;
                 player  .id         = "youtube-player-" + index;
-                
+
                 cover   .src        = video.cover;
                 cover   .className  = "video-cover";
-                
-                wrapper .className  = "video-wrapper";
-                
+
+                wrapper .className  = "video-wrapper gallery-block";
+
                 wrapper     .appendChild (cover);
                 wrapper     .appendChild (player);
                 t.container .appendChild (wrapper);
-                
-                YouTubeAPIAddPlayer ({ 
-                
+
+                YouTubeAPIAddPlayer ({
+
                     id:     player.id,
                     params: {
-                        
+
                         width:      640,    // 720p half-res
                         height:     360,    // 720p half-res
                         videoId:    vid,
-                        
+
                         playerVars: {
-                            
+
                             // https://developers.google.com/youtube/player_parameters
-                        
+
                             'enablejsapi'       : 1,
                             'loop'              : 1,
                             'start'             : video.start,
@@ -377,60 +516,60 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
                             'playsinline'       : 1,
                           //'origin'            : "https://www.andrejszontagh.com/",
                         },
-                        
+
                         events: {
-                            
+
                             'onReady': function (e) {
-                                
+
                                 // https://developers.google.com/youtube/iframe_api_reference#Operations
-                                
-                                var player = e.target;                            
+
+                                var player = e.target;
                                 var iframe = player.getIframe ();
-                                
+
                                 // makes sure it's muted
-                                player.mute ();                                
+                                player.mute ();
 
                                 // starts low quality to make the buffering fast ..
                                 player.setPlaybackQuality ("small");  // small, medium, large, hd720 ..
-                                
+
                                 // this starts buffering but do not play yet
-                                // we want to start buffering as soon as possible .. 
+                                // we want to start buffering as soon as possible ..
                                 player.playVideo    ();
                                 player.pauseVideo   ();
-                                
+
                                 function onScroll () {
-                                    
+
                                     if (animations.isInViewport (iframe.parentNode, edge)) {
 
                                         // this helps with loading spikes when user scrolls wildly ..
-                                        
+
                                         if (player.timer === undefined) player.timer = null;
-                                        
+
                                         if (player.timer != null) clearTimeout (player.timer);
-                                        
+
                                         player.timer = setTimeout (function () {
-                                        
+
                                             // make sure still in viewport !
                                             if (animations.isInViewport (iframe.parentNode, edge)) {
-                                        
+
                                                 player.playVideo ();
                                             }
-                                            
+
                                         }, 500);
-                                                                                                                    
+
                                     } else {
-                                        
+
                                         player.pauseVideo ();
                                     }
                                 }
-                                
+
                                 // in the case object is already in the viewport
                                 onScroll ();
-                                        
+
                                 window.addEventListener ("resize", onScroll);
                                 window.addEventListener ("scroll", onScroll);
                             },
-                            
+
                             'onStateChange': function (e) {
 
                                 var player  = e.target;
@@ -438,35 +577,35 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
                                 var cover   = iframe.parentNode.querySelector (".video-cover");
 
                                 switch (e.data) {
-                                    
+
                                     case YT.PlayerState.BUFFERING:
-                                    
-                                        // console.log ("BUFFERING >> " + iframe.id); 
+
+                                        // console.log ("BUFFERING >> " + iframe.id);
 
                                         // show cover
                                         cover.classList.remove  ("cover-hidden");
                                         cover.classList.add     ("cover-visible");
-                                        
+
                                         break;
-                                        
+
                                     case YT.PlayerState.PLAYING:
-                                    
-                                        // console.log ("PLAYING   >> " + iframe.id); 
-                                        
+
+                                        // console.log ("PLAYING   >> " + iframe.id);
+
                                         // hide cover
                                         cover.classList.remove  ("cover-visible");
                                         cover.classList.add     ("cover-hidden");
-                                        
+
                                         break;
                                 }
                             },
-                            
+
                             'onError': function (e) {
-                                
+
                                 // TODO: handle errors !
-                                
+
                                 switch (e.data) {
-                                    
+
                                     case 2:     break;  // The request contains an invalid parameter value
                                     case 5:     break;  // The requested content cannot be played in an HTML5 player
                                     case 100:   break;  // The video requested was not found
@@ -480,18 +619,18 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
                 });
             }
         }
-        
+
         callback ();
     });
 }
 
 GalleryVideos.prototype = {
-    
+
     constructor: GalleryVideos,
 }
 
 
-function GalleryImages (container, filepath_json, callback) {
+function GalleryImages (container, filepath_json, callback_init, callback_update) {
 
     var t = this;
 
@@ -514,8 +653,8 @@ function GalleryImages (container, filepath_json, callback) {
 
     t.layout = new Masonry ('#gallery-images', {
 
-        itemSelector:       '.gallery-image',
-        columnWidth:        '.gallery-image',
+        itemSelector:       '.gallery-block',
+        columnWidth:        '.gallery-block',
         percentPosition:    true,
         transitionDuration: 0,
         stagger:            0,
@@ -528,7 +667,8 @@ function GalleryImages (container, filepath_json, callback) {
 
             // console.log ("json.images [i] >> " + json.images [i]);
 
-            var img = document.createElement ('img');
+            var wrapper     = document.createElement ('div');
+            var img         = document.createElement ('img');
 
             // https://stackoverflow.com/questions/4250364/how-to-trim-a-file-extension-from-a-string-in-javascript
 
@@ -539,18 +679,15 @@ function GalleryImages (container, filepath_json, callback) {
 
             // console.log ("FILE : " + base + " EXTENSION : " + extension);
 
-            img.src         = base + "_tumbnail" + extension;
-            img.className   = "gallery-image";
+            wrapper.className = "gallery-block";
+            
+            img.src = base + "_tumbnail" + extension;
 
             // store full res image filename for lightbox (loads when opening lightbox)
             img.setAttribute ("src-lightbox", filename);
 
-            img.onclick = function (e) {
-
-                t.showLightbox (e.target);
-            };
-
-            t.container.appendChild (img);
+            wrapper     .appendChild (img);
+            t.container .appendChild (wrapper);
 
             // as soon as image is loaded update the layout ..
 
@@ -558,8 +695,10 @@ function GalleryImages (container, filepath_json, callback) {
 
                 // console.log ("Image loaded > " + e.target);
 
-                t.layout.appended (e.target);
+                t.layout.appended (e.target.parentNode);
                 t.layout.layout (); // !!
+
+                callback_update ();
             });
 
             img.addEventListener ('error', function () {
@@ -568,11 +707,13 @@ function GalleryImages (container, filepath_json, callback) {
 
                 e.target.remove ();
                 t.layout.layout (); // !!
+
+                callback_update ();
             });
         }
 
         // images might not be loaded yet and layout not ready !
-        callback ();
+        callback_init ();
     });
 };
 
@@ -617,8 +758,8 @@ function UI () {
 
     var t = this;
 
-    t.ui        = document.getElementById ("ui");
-    t.overlay   = document.getElementById ("overlay");
+    t.ui    = document.getElementById ("ui");
+    t.body  = document.getElementsByTagName ("BODY")[0];
 
     // detect touch device !
 
@@ -665,21 +806,23 @@ function UI () {
             email_serv_1 + "\u200B.\u200B" + email_serv_2;
     }
 
-    // special case .. for disabling main content scrolling
+    // set css classes on overlay
     {
-        var el      = document.getElementById ("terms-conditions-block");
-        var body    = document.getElementsByTagName ("BODY")[0];
+        var el = document.getElementById ("overlay");
 
-        el.addEventListener ('onvisible',   function (e) { body.classList.add       ("noscroll"); }, false);
-        el.addEventListener ('onhidden',    function (e) { body.classList.remove    ("noscroll"); }, false);
-    }
+        el.addEventListener ('onvisible', function (e) {
 
-    // special case .. ui disable when overlay is shown
-    {
-        var el      = document.getElementById ("overlay");
+            t.ui    .classList.add ("overlay");
+            t.body  .classList.add ("noscroll");
 
-        el.addEventListener ('onvisible',   function (e) { t.ui.classList.add       ("overlay"); }, false);
-        el.addEventListener ('onhidden',    function (e) { t.ui.classList.remove    ("overlay"); }, false);
+        }, false);
+
+        el.addEventListener ('onhidden', function (e) {
+
+            t.ui    .classList.remove ("overlay");
+            t.body  .classList.remove ("noscroll");
+
+        }, false);
     }
 }
 
@@ -689,7 +832,7 @@ UI.prototype = {
 
     touch:          false,  // touch device ?
 
-    overlay:        null,
+    body:           null,
     ui:             null,
 
     parseButtonStateRef: function (el) {
@@ -731,7 +874,7 @@ UI.prototype = {
         return out;
     },
 
-    setButtonState: function (el, state) {
+    setButtonState: function (el, state, propagate = true) {
 
         var t = this;
 
@@ -742,35 +885,65 @@ UI.prototype = {
             var button_state = t.parseButtonStateRef (el);
 
             if (!button_state.value_readonly) {
+
                 /*
-                if (button_state.value_ext) {
+                if (propagate === true) {
 
-                    var targets = t.ui.querySelectorAll (button_state.value_ext);
+                    if (button_state.value_ext) {
 
-                    for (var i = 0; i < targets.length; i ++) {
+                        var targets = t.body.querySelectorAll (button_state.value_ext);
 
-                        t.setButtonState (targets [i], state);
+                        for (var i = 0; i < targets.length; i ++) {
+
+                            t.setButtonState (targets [i], state, false);
+                        }
                     }
                 }
                 */
+
                 // console.log ("Button : " + el.id + " State > " + state);
 
                 el.setAttribute ("button-state", state);
             }
 
-            if (state === "on") {
+            // clear buttons selected by "button-clear" attribute
 
-                var button_set = el.getAttribute ("button-set-on");
+            if (propagate === true) {
 
-                if (button_set !== null) {
+                var button_clear = el.getAttribute ("button-clear");
 
-                    var targets = t.ui.querySelectorAll (button_set);
+                if (button_clear !== null) {
+
+                    var targets = t.body.querySelectorAll (button_clear);
 
                     for (var i = 0; i < targets.length; i ++) {
 
                         if (targets [i] !== el) {
 
-                            t.setButtonState (targets [i], state);
+                            if (t.getButtonState (targets [i]) === "on") {
+                                t.setButtonState (targets [i], "off", false);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (state === "on") {
+
+                if (propagate === true) {
+
+                    var button_set = el.getAttribute ("button-set-on");
+
+                    if (button_set !== null) {
+
+                        var targets = t.body.querySelectorAll (button_set);
+
+                        for (var i = 0; i < targets.length; i ++) {
+
+                            if (targets [i] !== el) {
+
+                                t.setButtonState (targets [i], state, false);
+                            }
                         }
                     }
                 }
@@ -780,17 +953,20 @@ UI.prototype = {
 
             if (state === "off") {
 
-                var button_set = el.getAttribute ("button-set-off");
+                if (propagate === true) {
 
-                if (button_set !== null) {
+                    var button_set = el.getAttribute ("button-set-off");
 
-                    var targets = t.ui.querySelectorAll (button_set);
+                    if (button_set !== null) {
 
-                    for (var i = 0; i < targets.length; i ++) {
+                        var targets = t.body.querySelectorAll (button_set);
 
-                        if (targets [i] !== el) {
+                        for (var i = 0; i < targets.length; i ++) {
 
-                            t.setButtonState (targets [i], state);
+                            if (targets [i] !== el) {
+
+                                t.setButtonState (targets [i], state, false);
+                            }
                         }
                     }
                 }
@@ -816,7 +992,7 @@ UI.prototype = {
         } else
         if (button_state.value_ext !== null) {
 
-            var target = t.ui.querySelector (attr);
+            var target = t.body.querySelector (attr);
 
             if (target) {
 
@@ -841,7 +1017,13 @@ UI.prototype = {
 
         if (sel) {
 
-            var targets = t.ui.querySelectorAll (sel);
+            var targets;
+
+            if (sel.trim () === "<this>") {
+
+                targets = [el]; } else {
+                targets = t.body.querySelectorAll (sel);
+            }
 
             if (targets != null) {
 
@@ -868,68 +1050,159 @@ UI.prototype = {
         }
     },
 
+    clearButtonEvents: function (b) {
+
+        b.removeEventListener ("mouseenter",    b.___button_listener_mouseenter);
+        b.removeEventListener ("mouseleave",    b.___button_listener_mouseleave);
+        b.removeEventListener ("mousedown",     b.___button_listener_mousedown);
+        b.removeEventListener ("mouseup",       b.___button_listener_mouseup);
+    },
+
+    initButton: function (b) {
+
+        var t = this;
+
+        t.clearButtonEvents (b);
+
+        if (b.classList.contains ("button-hover")) {
+
+            b.___button_listener_mouseleave = function (e) { t.setButtonState (e.target, "off"); }
+            b.___button_listener_mouseenter = function (e) {
+
+                t.setButtonState            (e.target, "on");
+                t.transformButtonByScrolls  (e.target);
+            }
+
+            b.___button_listener_mousedown = function (e) {
+
+                if (e.target.___callback_open_lightbox) {
+                    e.target.___callback_open_lightbox (e);
+                }
+            }
+
+            b.addEventListener ("mouseenter",   b.___button_listener_mouseenter);
+            b.addEventListener ("mouseleave",   b.___button_listener_mouseleave);
+            b.addEventListener ("mousedown",    b.___button_listener_mousedown);
+
+        } else
+        if (b.classList.contains ("button-press")) {
+
+            b.___button_listener_mousedown = function (e) {
+
+                var el = e.target;
+
+                var state = t.getButtonState (el);
+
+                if (state === "on")     { t.setButtonState (el, "off"); } else
+                if (state === "off")    { t.setButtonState (el, "on");  }
+            }
+
+            b.___button_listener_mouseup = function (e) {
+
+                var time = new Date ().getTime ();
+
+                if (e.target.___button_listener_mouseup_time) {
+
+                    var delta = time - e.target.___button_listener_mouseup_time;
+
+                    if (delta > 100 && delta < 500) {
+
+                        // e.preventDefault ();
+
+                        if (e.target.___callback_open_lightbox) {
+                            e.target.___callback_open_lightbox (e);
+                        }
+                    }
+                }
+
+                e.target.___button_listener_mouseup_time = time;
+            }
+
+            b.addEventListener ("mousedown",        b.___button_listener_mousedown);
+            b.addEventListener ("mouseup",          b.___button_listener_mouseup);
+        }
+
+        if (!b.___callback_open_lightbox) {
+            b.___callback_open_lightbox = function (e) {
+
+                // console.log ("LIGHTBOX >> OPEN");
+            }
+        }
+    },
+
+    transformButton: function (b) {
+
+        var t = this;
+
+        // transforms hover button to press button
+        if (b.classList.contains ("button-hover")) {
+
+            // console.log ("transformButton >> " + b.id);
+
+            t.clearButtonEvents (b);
+
+            b.classList.remove  ("button-hover");
+            b.classList.add     ("button-press");
+
+            t.initButton (b);
+        }
+    },
+
+    transformButtonByScrolls: function (b) {
+
+        var t = this;
+
+        if (b.classList.contains ("button-hover")) {
+
+            var attr = b.getAttribute ("button-scroll");
+
+            if (attr !== null) {
+
+                var h = window.innerHeight;
+
+                var scrolls = t.body.querySelectorAll (attr);
+
+                for (var i = 0; i < scrolls.length; i ++) {
+
+                    var s = scrolls [i];
+
+                    var r = s.getBoundingClientRect ();
+
+                    if ((r.top + r.height) > h) {
+
+                        t.transformButton (b);
+
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
     updateButtons: function () {
 
         var t = this;
 
-        // HOVER BUTTONS >>
-        {
-            var buttons = t.ui.querySelectorAll (".button-hover");
+        var buttons = t.body.querySelectorAll (".button-hover, .button-press");
 
-            for (var i = 0; i < buttons.length; i ++) {
+        for (var i = 0; i < buttons.length; i ++) {
 
-                var b = buttons [i];
+            var b = buttons [i];
 
-                b.removeEventListener ("mouseenter", b.on_mouseenter_button_target_listener);
-                b.removeEventListener ("mouseleave", b.on_mouseleave_button_target_listener);
+            // console.log ("button : " + b.id + " class : " + b.className);
 
-                if (t.touch) {
-
-                    b.classList.remove  ("button-hover");
-                    b.classList.add     ("button-press");
-
-                } else {
-
-                    b.on_mouseenter_button_target_listener = function (e) { t.setButtonState (e.target, "on");  }
-                    b.on_mouseleave_button_target_listener = function (e) { t.setButtonState (e.target, "off"); }
-
-                    b.addEventListener ("mouseenter", b.on_mouseenter_button_target_listener);
-                    b.addEventListener ("mouseleave", b.on_mouseleave_button_target_listener);
-                }
-            }
-        }
-
-        // PRESS BUTTONS >>
-        {
-            var buttons = t.ui.querySelectorAll (".button-press");
-
-            for (var i = 0; i < buttons.length; i ++) {
-
-                var b = buttons [i];
-
-                b.removeEventListener ("mousedown", b.on_mousedown_button_target_listener);
-
-                b.on_mousedown_button_target_listener = function (e) {
-
-                    var el = e.target;
-
-                    var state = t.getButtonState (el);
-
-                    if (state === "on")     { t.setButtonState (el, "off"); } else
-                    if (state === "off")    { t.setButtonState (el, "on");  }
-                }
-
-                b.addEventListener ("mousedown", b.on_mousedown_button_target_listener);
+            if (t.touch) {
+                t.transformButton   (b); } else {
+                t.initButton        (b);
             }
         }
     },
 }
 
 
-var animations      = null;
-var gallery_videos  = null;
-var gallery_images  = null;
-var ui              = null;
+var manager_ui          = null;
+var manager_animations  = null;
+var manager_gallery     = null;
 
 window.onload = function (e) {
 
@@ -938,26 +1211,8 @@ window.onload = function (e) {
     // console.log ("window.location.pathname  : " + window.location.pathname);
     // console.log ("window.location.protocol  : " + window.location.protocol);
     // console.log ("window.location.port      : " + window.location.port);
-    
-    animations = new Animations ();
-    
-    gallery_videos = new GalleryVideos (
-        document.getElementById ("gallery-videos"), "data/gallery-videos.json", animations, 0.0,
-        
-        function () {
-       
-            console.log ("Video Gallery Initialized");
-        }
-    );
-    
-    gallery_images = new GalleryImages (
-        document.getElementById ("gallery-images"), "data/gallery-images.json",
-        
-        function () {
-       
-            console.log ("Image Gallery Initialized");
-        }
-    );
-    
-    ui = new UI ();
+
+    manager_ui          = new UI            ();
+    manager_animations  = new Animations    ();
+    manager_gallery     = new Gallery       (manager_ui, manager_animations);
 }

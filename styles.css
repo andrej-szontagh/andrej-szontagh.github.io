@@ -5,7 +5,16 @@
     }
 }
 */
+/*
+// firefox fix !
+@-moz-document url-prefix() {
+
+}
+*/
 @import url("https://fonts.googleapis.com/css?family=Montserrat:500,700,900");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,800");
+@-moz-document url-prefix() { }
+
 :root {
   --font-size-6:              17.94427rem;
   --font-size-5:              11.09016rem;
@@ -14,24 +23,25 @@
   --font-size-2:              2.618033rem;
   --font-size-1:              1.618033rem;
   --font-size-normal:         1.000000rem;
-  --font-weight-normal:       500;
-  --font-weight-bold:         700;
-  --font-weight-black:        900;
-  --font-height-normal:       0.7em;
-  --font-height-bold:         0.7em;
-  --font-height-black:        0.7em;
   font-family: "Montserrat", sans-serif;
-  font-weight: var(--font-weight-normal);
+  font-weight: 500;
   font-style: normal;
   text-transform: none;
   text-decoration: none;
   text-rendering: geometricPrecision;
   line-height: 1.6em;
   letter-spacing: normal;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: subpixel-antialiased;
+  font-smoothing: antialiased;
+  -ms-font-feature-settings: normal;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%; }
+
+@-moz-document url-prefix() {
+  :root {
+    font-weight: 400; } }
   @media (max-width: 1599px) {
     :root {
       font-size: 16px; } }
@@ -77,26 +87,33 @@ body {
 
 body.noscroll {
   overflow: hidden; }
+  body.noscroll #body-wrapper {
+    overflow-y: scroll; }
 
+/*
 body::-webkit-scrollbar {
-  display: none; }
 
+    display:            none;
+}
+*/
 #content {
   overflow: hidden; }
 
 #content:before {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  font-style: normal;
   content: "PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO TEMPORARY DEMO PROVISIONAL DEMO";
   position: relative;
-  left: var(--font-height-black);
+  left: 0.7em;
   top: -1.0rem;
   width: 0;
   height: 0;
   transform: rotate(90deg);
   transform-origin: left bottom 0;
   float: left;
-  font-weight: var(--font-weight-black);
   font-size: var(--font-size-6);
-  line-height: var(--font-height-black);
+  line-height: 0.7em;
   white-space: nowrap;
   word-wrap: normal;
   display: block;
@@ -106,7 +123,14 @@ body::-webkit-scrollbar {
   pointer-events: none;
   user-select: none; }
 
+@-moz-document url-prefix() {
+  #content:before {
+    font-weight: 800; } }
+
 #ui {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-style: normal;
   height: 100vh;
   width: 100vw;
   position: fixed;
@@ -114,9 +138,12 @@ body::-webkit-scrollbar {
   left: 0;
   z-index: 2;
   font-size: var(--font-size-normal);
-  font-weight: var(--font-weight-normal);
   line-height: 1.6em;
   pointer-events: none; }
+
+@-moz-document url-prefix() {
+  #ui {
+    font-weight: 400; } }
   #ui.overlay .button-hover:not(.hidden),
   #ui.overlay .button-press:not(.hidden) {
     pointer-events: none;
@@ -127,13 +154,9 @@ body::-webkit-scrollbar {
       pointer-events: auto; }
   #ui.overlay #contact-button:not(.hidden) {
     opacity: 0.0;
-    pointer-events: auto; }
-    #ui.overlay #contact-button:not(.hidden)[button-state='on'] {
-      opacity: 0.0;
+    pointer-events: none; }
+    #ui.overlay #contact-button:not(.hidden).button-hover[button-state='on'] {
       pointer-events: auto; }
-  #ui.overlay #terms-conditions-block:not(.hidden) {
-    opacity: 1.0;
-    pointer-events: auto; }
   #ui.overlay #terms-conditions-button.button-press[button-state='on'] {
     opacity: 0.0;
     pointer-events: none; }
@@ -181,7 +204,7 @@ body::-webkit-scrollbar {
 @media (max-width: 799px) and (min-width: 551px) and (min-height: 751px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.32rem;
@@ -200,7 +223,7 @@ body::-webkit-scrollbar {
 @media (max-width: 799px) and (max-width: 550px) and (min-width: 751px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -218,7 +241,7 @@ body::-webkit-scrollbar {
 @media (max-width: 799px) and (max-height: 750px) and (min-width: 751px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -236,7 +259,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (min-width: 1301px) and (min-height: 301px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -254,7 +277,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-width: 1300px) and (min-width: 551px) and (min-height: 751px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.32rem;
@@ -273,7 +296,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-width: 1300px) and (max-width: 550px) and (min-width: 1001px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -291,7 +314,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-width: 1300px) and (max-height: 750px) and (min-width: 1001px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -309,7 +332,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-height: 300px) and (min-width: 551px) and (min-height: 751px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.32rem;
@@ -328,7 +351,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-height: 300px) and (max-width: 550px) and (min-width: 1001px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -346,7 +369,7 @@ body::-webkit-scrollbar {
 @media (min-width: 800px) and (max-width: 1599px) and (max-height: 300px) and (max-height: 750px) and (min-width: 1001px) and (min-height: 401px) {
   #external-links {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 6.27rem;
     left: auto;
     right: 4.8rem;
@@ -363,7 +386,7 @@ body::-webkit-scrollbar {
   @media (min-width: 1600px) {
     #external-links {
       display: block;
-      position: fixed;
+      position: absolute;
       top: 6.27rem;
       left: auto;
       right: 4.8rem;
@@ -379,12 +402,14 @@ body::-webkit-scrollbar {
         transform: none; } }
 
 #contact-button {
-  font-weight: var(--font-weight-black);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  font-style: normal;
   font-size: var(--font-size-3);
   text-transform: uppercase;
   text-align: left;
   line-height: 1.6em;
-  position: fixed;
+  position: absolute;
   left: calc(4.8rem - 0.78em);
   top: 4.8rem;
   width: auto;
@@ -394,6 +419,10 @@ body::-webkit-scrollbar {
   cursor: pointer;
   pointer-events: auto;
   user-select: none; }
+
+@-moz-document url-prefix() {
+  #contact-button {
+    font-weight: 800; } }
 
 @media (max-width: 1599px) and (max-width: 799px) {
   #contact-button {
@@ -413,7 +442,7 @@ body::-webkit-scrollbar {
       display: none; } }
 
 #contact-block {
-  position: fixed;
+  position: absolute;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -426,7 +455,9 @@ body::-webkit-scrollbar {
     transition: opacity 0.5s; }
   #contact-block #contact-email {
     line-height: 1em;
-    font-weight: var(--font-weight-black);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    font-style: normal;
     text-transform: lowercase;
     word-break: break-word;
     color: var(--color-bg);
@@ -435,7 +466,7 @@ body::-webkit-scrollbar {
     user-select: auto; }
     @media (orientation: portrait) {
       #contact-block #contact-email {
-        position: fixed;
+        position: absolute;
         left: 4.8rem;
         top: 14.57rem;
         transform: translateY(-100%) rotate(90deg);
@@ -521,7 +552,7 @@ body::-webkit-scrollbar {
     left: calc(50% - 1.5em); } }
     @media (orientation: landscape) {
       #contact-block #contact-email {
-        position: fixed;
+        position: absolute;
         left: 4.8rem;
         font-size: var(--font-size-3);
         width: 6.4em; } }
@@ -586,8 +617,12 @@ body::-webkit-scrollbar {
     font-size: var(--font-size-5);
     width: 6.4em; } }
 
+@-moz-document url-prefix() {
+  #contact-block #contact-email {
+    font-weight: 800; } }
+
 #terms-conditions-button {
-  position: fixed;
+  position: absolute;
   top: auto;
   bottom: 2.6rem;
   left: 4.8rem;
@@ -598,29 +633,37 @@ body::-webkit-scrollbar {
     opacity: 0.0; }
 
 #terms-conditions-block {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
-  opacity: 0.0;
-  transition: opacity 0.5s;
-  pointer-events: none;
-  user-select: none;
+  height: 100%;
+  overflow: auto;
   /*
-    display:                flex;
-    justify-items:          center;
-    align-items:            center;
+    display:                    flex;
+    justify-items:              center;
+    align-items:                center;
     */ }
   #terms-conditions-block.visible {
     opacity: 1.0;
-    transition: opacity 0.5s; }
-  #terms-conditions-block.button-press {
-    z-index: 1; }
+    transition: opacity 0.5s;
+    pointer-events: auto; }
+    #terms-conditions-block.visible .scroll {
+      pointer-events: auto    !important;
+      z-index: 1       !important;
+      opacity: 1.0     !important; }
+  #terms-conditions-block.hidden {
+    opacity: 0.0;
+    transition: opacity 0.5s;
+    pointer-events: none; }
+    #terms-conditions-block.hidden .scroll {
+      pointer-events: none    !important;
+      z-index: 0       !important;
+      opacity: 1.0     !important; }
   #terms-conditions-block .scroll {
     --gap-vert:             1.71rem;
     --gap-horz:             3.42rem;
-    padding-top: 6.27rem;
+    padding-top: 5.57rem;
     padding-bottom: 6.27rem;
     padding-left: 4.8rem;
     padding-right: 4.8rem;
@@ -630,6 +673,8 @@ body::-webkit-scrollbar {
     grid-gap: var(--gap-vert) var(--gap-horz);
     justify-items: stretch;
     pointer-events: none; }
+    #terms-conditions-block .scroll > div {
+      pointer-events: none; }
     #terms-conditions-block .scroll > div {
       display: inline-block;
       float: left;
@@ -687,82 +732,30 @@ body::-webkit-scrollbar {
           grid-row-start: 4;
           grid-row-end: span 1; } }
     #terms-conditions-block .scroll p {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      font-style: normal;
       color: var(--color-bg);
       font-size: var(--font-size-normal);
-      font-weight: var(--font-weight-normal);
       line-height: 1.3em; }
+
+@-moz-document url-prefix() {
+  #terms-conditions-block .scroll p {
+    font-weight: 400; } }
     #terms-conditions-block .scroll h3 {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 700;
+      font-style: normal;
       color: var(--color-bg);
       font-size: var(--font-size-normal);
-      font-weight: var(--font-weight-bold);
       line-height: 1.2em; }
 
-@media (max-width: 1599px) and (min-width: 1000px) and (max-width: 1399px) and (max-height: 799px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (min-width: 800px) and (max-width: 999px) and (max-height: 849px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (min-width: 600px) and (max-width: 799px) and (max-height: 949px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (min-width: 500px) and (max-width: 599px) and (max-height: 1049px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (min-width: 400px) and (max-width: 499px) and (max-height: 1249px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (max-width: 399px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (max-width: 1599px) and (max-height: 499px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
-
-@media (min-width: 1600px) and (max-height: 699px) {
-  #terms-conditions-block.visible {
-    pointer-events: auto;
-    overflow: auto;
-    height: 100%; }
-    #terms-conditions-block.visible > div {
-      pointer-events: none; } }
+@-moz-document url-prefix() {
+  #terms-conditions-block .scroll h3 {
+    font-weight: 600; } }
 
 #copyright-button {
-  position: fixed;
+  position: absolute;
   top: auto;
   bottom: 2.6rem;
   left: auto;
@@ -775,7 +768,7 @@ body::-webkit-scrollbar {
       display: none; } }
 
 #copyright-block {
-  position: fixed;
+  position: absolute;
   right: 8.2rem;
   bottom: 6rem;
   width: 30rem;
@@ -793,43 +786,80 @@ body::-webkit-scrollbar {
     padding: 1.3rem; }
   #copyright-block #block-a p,
   #copyright-block #block-b p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-style: normal;
     color: var(--color-bg);
     font-size: var(--font-size-normal);
-    font-weight: var(--font-weight-bold);
     line-height: 1.3em; }
+
+@-moz-document url-prefix() {
+  #copyright-block #block-a p,
+  #copyright-block #block-b p {
+    font-weight: 600; } }
   #copyright-block #block-a h4,
   #copyright-block #block-b h4 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     color: var(--color-bg);
     font-size: var(--font-size-normal);
-    font-weight: var(--font-weight-normal);
     line-height: 1.2em; }
+
+@-moz-document url-prefix() {
+  #copyright-block #block-a h4,
+  #copyright-block #block-b h4 {
+    font-weight: 400; } }
   #copyright-block #block-c p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-style: normal;
     color: var(--color-bg);
     font-size: var(--font-size-normal);
-    font-weight: var(--font-weight-normal);
     line-height: 1.3em; }
+
+@-moz-document url-prefix() {
+  #copyright-block #block-c p {
+    font-weight: 400; } }
+
+#content {
+  --gallery-block-filter-on:  grayscale(1.0) contrast(0.5) brightness(0.5);
+  --gallery-block-filter-off: grayscale(0.0) contrast(1.0) brightness(1.0);
+  /*
+    .gallery-block:after {
+
+        content: "";
+        background-color: red;
+        position: absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height: 100%;
+    }
+*/ }
+  #content .gallery-block {
+    filter: var(--gallery-block-filter-on);
+    transition: filter 0.5s;
+    user-select: none;
+    pointer-events: auto;
+    cursor: pointer; }
+    #content .gallery-block.visible {
+      filter: var(--gallery-block-filter-off);
+      transition: filter 0.5s; }
+    #content .gallery-block.hidden {
+      filter: var(--gallery-block-filter-on);
+      transition: filter 0.5s; }
 
 #gallery-videos {
   --section-height:       40vw;
   --video-height:         calc(var(--section-height) *  1.4);
-  --video-offset:         calc(var(--section-height) * -0.2);
-  --blur:                 0px; }
+  --video-offset:         calc(var(--section-height) * -0.2); }
   #gallery-videos .video-wrapper {
     width: 100%;
     height: var(--section-height);
     user-select: none;
     pointer-events: auto;
     overflow: hidden; }
-    #gallery-videos .video-wrapper {
-      filter: grayscale(1) contrast(0.5) brightness(0.5);
-      transition: filter 0.5s; }
-      #gallery-videos .video-wrapper iframe {
-        filter: blur(var(--blur)); }
-    #gallery-videos .video-wrapper:hover {
-      filter: grayscale(0);
-      transition: filter 0.5s; }
-      #gallery-videos .video-wrapper:hover iframe {
-        filter: none; }
     #gallery-videos .video-wrapper .video-cover {
       position: absolute;
       width: 100%;
@@ -838,8 +868,7 @@ body::-webkit-scrollbar {
       top: var(--video-offset);
       user-select: none;
       pointer-events: none;
-      z-index: 1;
-      filter: blur(var(--blur)); }
+      z-index: 1; }
       #gallery-videos .video-wrapper .video-cover.cover-hidden {
         z-index: 0; }
       #gallery-videos .video-wrapper .video-cover.cover-visible {
@@ -854,41 +883,37 @@ body::-webkit-scrollbar {
       pointer-events: none; }
 
 #gallery-images {
-  --blur: 0px;
   line-height: 0; }
-  #gallery-images .gallery-image {
-    width: 25%;
-    filter: grayscale(1) contrast(0.5) brightness(0.5) blur(var(--blur));
-    transition: filter 0.5s;
-    user-select: none;
-    pointer-events: auto;
-    cursor: pointer; }
-    #gallery-images .gallery-image:hover {
-      filter: grayscale(0);
-      transition: filter 0.5s; }
+  #gallery-images .gallery-block {
+    width: 25%; }
+    #gallery-images .gallery-block img {
+      display: block;
+      width: 100%;
+      user-select: none;
+      pointer-events: none; }
     @media (max-width: 4000px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 12.5000%; } }
     @media (max-width: 3500px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 14.2857%; } }
     @media (max-width: 3000px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 16.6666%; } }
     @media (max-width: 2500px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 20.0000%; } }
     @media (max-width: 2000px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 25.0000%; } }
     @media (max-width: 1500px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 33.3333%; } }
     @media (max-width: 1000px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 50.0000%; } }
     @media (max-width: 500px) {
-      #gallery-images .gallery-image {
+      #gallery-images .gallery-block {
         width: 100.0000%; } }
   #gallery-images #lightbox {
     position: fixed;
