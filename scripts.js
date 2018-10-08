@@ -377,6 +377,7 @@ function Gallery (manager_ui, manager_animations) {
 
                 if (el.classList.contains   ("button-hover") == false) {
                     el.classList.add        ("button-hover");
+                    el.classList.add        ("hidden");
 
                     el.setAttribute ("button-target",  "<this>");
                     el.setAttribute ("button-clear",   ".gallery-block");
@@ -519,7 +520,7 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
 
                         events: {
 
-                            'onReady': function (e) {
+                            "onReady": function (e) {
 
                                 // https://developers.google.com/youtube/iframe_api_reference#Operations
 
@@ -570,7 +571,7 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
                                 window.addEventListener ("scroll", onScroll);
                             },
 
-                            'onStateChange': function (e) {
+                            "onStateChange": function (e) {
 
                                 var player  = e.target;
                                 var iframe  = player.getIframe ();
@@ -600,17 +601,18 @@ function GalleryVideos (container, filepath_json, animations, edge, callback) {
                                 }
                             },
 
-                            'onError': function (e) {
+                            "onError": function (e) {
 
                                 // TODO: handle errors !
 
                                 switch (e.data) {
 
-                                    case 2:     break;  // The request contains an invalid parameter value
-                                    case 5:     break;  // The requested content cannot be played in an HTML5 player
-                                    case 100:   break;  // The video requested was not found
-                                    case 101:   break;  // The owner of the requested video does not allow it to be played in embedded players
-                                    case 150:   break;  // This error is the same as 101. It's just a 101 error in disguise!
+                                    case 2:     console.log ("YouTube API error 2");    break;  // The request contains an invalid parameter value
+                                    case 5:     console.log ("YouTube API error 5");    break;  // The requested content cannot be played in an HTML5 player
+                                    case 100:   console.log ("YouTube API error 100");  break;  // The video requested was not found
+                                    case 101:   console.log ("YouTube API error 101");  break;  // The owner of the requested video does not allow it to be played in embedded players
+                                    case 150:   console.log ("YouTube API error 150");  break;  // This error is the same as 101. It's just a 101 error in disguise!
+
                                     default:
                                 }
                             }
@@ -680,7 +682,7 @@ function GalleryImages (container, filepath_json, callback_init, callback_update
             // console.log ("FILE : " + base + " EXTENSION : " + extension);
 
             wrapper.className = "gallery-block";
-            
+
             img.src = base + "_tumbnail" + extension;
 
             // store full res image filename for lightbox (loads when opening lightbox)
@@ -739,6 +741,10 @@ GalleryImages.prototype = {
             img.src = img.getAttribute ("src-lazy");
         }
 
+        // TODO:
+        // body.classList.add ("noscroll");
+        // call it from some UI function
+
         this.lightbox_visible = true;
     },
 
@@ -746,6 +752,10 @@ GalleryImages.prototype = {
 
         this.lightbox.classList.remove  ("lightbox-visible");
         this.lightbox.classList.add     ("lightbox-hidden");
+
+        // TODO:
+        // body.classList.remove ("noscroll");
+        // call it from some UI function
 
         this.lightbox_visible = false;
     },
@@ -1063,6 +1073,11 @@ UI.prototype = {
         var t = this;
 
         t.clearButtonEvents (b);
+
+        // init state if missing ..
+        if (b.getAttribute ("button-state") === null) {
+            b.setAttribute ("button-state", "off");
+        }
 
         if (b.classList.contains ("button-hover")) {
 
