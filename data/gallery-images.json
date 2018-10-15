@@ -1,16 +1,84 @@
 {
+    "descriptions" : {
+
+        "garden-designer": {
+
+            "name":     "Garden Designer",
+            "year":     "2016-2017",
+            "oneliner": "Garden/outdoor/indoor arranger and editor incorporated into e-commerce system.",
+            "tags":     ["Unity3D", "C#", "3dmodeling", "solo"]
+        },
+
+        "meta-elements": {
+
+            "name":     "META-Elements",
+            "year":     "2012-2016",
+            "oneliner": "Procedural 3D modeling system / generator for realistic vegetation",
+            "tags":     ["Java", "OpenGL", "OpenCL", "OpenCV", "Swing", "Nodes", "PathTracing", "PBR", "HDRi", "Unbiased", "Personal"]
+        },
+
+        "bouquet-designer": {
+
+            "name":     "Bouquet Designer",
+            "year":     "2016",
+            "oneliner": "Web application selling flower bouquets showing generated 3D visualization in real time.",
+            "tags":     ["WebGL", "javascript", "generator", "shaders", "3dmodeling", "phone", "tablet", "desktop", "solo"]
+        },
+
+        "mmorpg": {
+
+            "name":     "MMORPG",
+            "year":     "2015",
+            "oneliner": "MMORPG game demo showing the mechanics in the game and basic combat and key features.",
+            "tags":     ["Unity3D", "C#", "NPC-AI", "GUI", "inventory", "armor", "environment", "combat", "animation", "3dmodeling", "solo"]
+        }
+    },
+
+    "videos" : {
+
+        "Joyiet6ag-A": {
+
+            "start": "65",
+            "cover": "data\\covers\\Garden Designer WIP Demo A.jpg"
+        },
+        "sn55KJkVbfg": {
+
+            "start": "4",
+            "cover": "data\\covers\\Garden Designer WIP Demo B.jpg"
+        },
+        "EnAjGROrvNw": {
+
+            "start": "0",
+            "cover": "data\\covers\\Garden Designer WIP Demo C.jpg"
+        },
+        "MJMbMvZtvgo": {
+
+            "start": "3",
+            "cover": "data\\covers\\Garden Designer WIP Demo D.jpg"
+        },
+        "-C-StR6aVxw": {
+
+            "start": "32",
+            "cover": "data\\covers\\Garden Designer WIP Demo E.jpg"
+        },
+        "dfW26RLWRa8": {
+
+            "start": "0",
+            "cover": "data\\covers\\META-Elements DEMO A.jpg"
+        },
+        "euomAmzoJVg": {
+
+            "start": "0",
+            "cover": "data\\covers\\META-Elements DEMO B.jpg"
+        }
+    },
+
     "images" : [
 
-        "data\\images\\ui\\bouquet-designer_A_color.jpg",
-        "data\\images\\ui\\izo1.jpg",
-        "data\\images\\ui\\mobile1.jpg",
-        "data\\images\\ui\\mockup37.jpg",
-        "data\\images\\ui\\mockup39.jpg",
-        "data\\images\\ui\\me.jpg",
-        "data\\images\\ui\\ui01_bright.jpg",
-        "data\\images\\ui\\ui01_dark.jpg",
-        "data\\images\\ui\\ui02_bright.jpg",
-        "data\\images\\ui\\ui02_dark.jpg",
+        "data\\images\\bouquet-designer\\desktop1.jpg",
+        "data\\images\\bouquet-designer\\desktop2.jpg",
+        "data\\images\\bouquet-designer\\phone1.jpg",
+        "data\\images\\bouquet-designer\\phone2.jpg",
 
         "data\\images\\mmorpg\\gameplay_01.jpg",
         "data\\images\\mmorpg\\gameplay_02.jpg",
